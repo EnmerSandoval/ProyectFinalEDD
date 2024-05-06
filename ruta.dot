@@ -1,0 +1,19 @@
+digraph G {resolution = 60;
+    rankdir=LR;
+    Qtzgo -> CiuVi
+    CiuVi -> Quich
+    Quich -> Peten
+    Peten -> StLMA
+    StLMA -> SBaMA
+    SBaMA -> Huehu
+    Huehu -> SnLcS
+    SnLcS -> Guate
+    Guate -> Guate
+    Guate -> SnLcS
+    SnLcS -> Huehu
+    Huehu -> SBaMA
+    SBaMA -> StLMA
+    StLMA -> Peten
+    Peten -> Quich
+    Quich -> CiuVi
+}

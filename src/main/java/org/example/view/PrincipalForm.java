@@ -8,12 +8,14 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 import org.example.controller.DataLoader;
+import org.example.model.BTreeNode;
 import org.example.model.Clock;
 import org.example.model.Graph;
 import org.example.model.Node;
@@ -30,6 +32,7 @@ public class PrincipalForm extends javax.swing.JFrame {
     private Graph graph;
     private Timer timer;
     private GraphVizExporter graphVizExporter;
+    private BTreeNode bTreeRoot;
 
     /**
      * Creates new form PrincipalForm
@@ -41,11 +44,12 @@ public class PrincipalForm extends javax.swing.JFrame {
         uploadClock();
         graphVizExporter = new GraphVizExporter();
         transportType.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-            String tipoTransporte = (String) transportType.getSelectedItem();
-            actualizarComboBoxRutas(tipoTransporte);
-        }
-    });
+            public void actionPerformed(ActionEvent e) {
+                String tipoTransporte = (String) transportType.getSelectedItem();
+                actualizarComboBoxRutas(tipoTransporte);
+            }
+        });
+        bTreeRoot = new BTreeNode(5, true);
     }
 
     public void uploadClock() {
@@ -114,19 +118,20 @@ public class PrincipalForm extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         comoBoxDestino = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        filterComboBox = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         transportType = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         calcularViaje = new javax.swing.JButton();
+        resultado = new javax.swing.JLabel();
         panelGraph = new javax.swing.JPanel();
         imageLabel = new javax.swing.JLabel();
-        textInfo = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        labelSubRoute = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         routesComboBox = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -209,7 +214,12 @@ public class PrincipalForm extends javax.swing.JFrame {
 
         jLabel3.setText("Filtro");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DISTANCIA", "DESGASTE", "CONSUMO", "TIEMPO" }));
+        filterComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "distancia", "desgaste", "consumo", "tiempo" }));
+        filterComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filterComboBoxActionPerformed(evt);
+            }
+        });
 
         jLabel5.setText("Tipo Transporte");
 
@@ -227,6 +237,13 @@ public class PrincipalForm extends javax.swing.JFrame {
         );
 
         calcularViaje.setText("Calcular Viaje");
+        calcularViaje.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                calcularViajeActionPerformed(evt);
+            }
+        });
+
+        resultado.setText("Resultado:");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -244,9 +261,10 @@ public class PrincipalForm extends javax.swing.JFrame {
                     .addComponent(comboBoxInicio, 0, 265, Short.MAX_VALUE)
                     .addComponent(comoBoxDestino, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel3)
-                    .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(filterComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel5)
-                    .addComponent(transportType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(transportType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(resultado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -265,7 +283,7 @@ public class PrincipalForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(filterComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
@@ -273,7 +291,11 @@ public class PrincipalForm extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(calcularViaje)
                 .addGap(15, 15, 15)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(resultado)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
         javax.swing.GroupLayout panelGraphLayout = new javax.swing.GroupLayout(panelGraph);
@@ -289,19 +311,19 @@ public class PrincipalForm extends javax.swing.JFrame {
             .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 446, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
-        textInfo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel6)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(labelSubRoute, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(20, 20, 20))))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -309,12 +331,14 @@ public class PrincipalForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
+                .addComponent(labelSubRoute, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE))
         );
 
         jLabel4.setText("Ruta");
 
         routesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SELECCIONE" }));
+
+        jButton1.setText("Por Ruta");
 
         jMenu1.setText("Files");
 
@@ -327,11 +351,6 @@ public class PrincipalForm extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Traffic File");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
@@ -348,16 +367,16 @@ public class PrincipalForm extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(routesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 634, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(panelGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(textInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel4)
+                            .addGap(18, 18, 18)
+                            .addComponent(routesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 634, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(panelGraph, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jButton1))
+                .addContainerGap(194, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -366,18 +385,16 @@ public class PrincipalForm extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(textInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(panelGraph, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(panelGraph, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addComponent(routesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 34, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(0, 4, Short.MAX_VALUE))
         );
 
         pack();
@@ -412,6 +429,12 @@ public class PrincipalForm extends javax.swing.JFrame {
         int returnval = jFileChooser.showOpenDialog(this);
         if (returnval == JFileChooser.APPROVE_OPTION) {
             dataLoader.loadRoutes(graph, jFileChooser.getSelectedFile().getPath());
+            for (Node node : graph.getNodes().values()) {
+                List<Route> routes = node.getRoutesOut();
+                for (Route route : routes) {
+                    bTreeRoot.insertRoute(route);
+                }
+            }
         }
 
         fillComboBoxesWithNodes();
@@ -422,15 +445,22 @@ public class PrincipalForm extends javax.swing.JFrame {
         generateGraphImage(graphFilePath, imageFilePath);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void calcularViajeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_calcularViajeActionPerformed
         // TODO add your handling code here:
-        DataLoader dataLoader = new DataLoader();
-        JFileChooser jFileChooser = new JFileChooser();
-        int returnval = jFileChooser.showOpenDialog(this);
-        if (returnval == JFileChooser.APPROVE_OPTION) {
-            dataLoader.loadTraffic(graph, jFileChooser.getSelectedFile().getPath());
-        }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+        String origen = (String) comboBoxInicio.getSelectedItem();
+        String destino = (String) comoBoxDestino.getSelectedItem();
+        String metricas = (String) filterComboBox.getSelectedItem();
+        String tipo = (String) transportType.getSelectedItem();
+        resultado.setText(metricas + " : "+ bTreeRoot.obtenerMetricaDeRuta(origen, destino, metricas, tipo));
+        String graphFilePath2 = "ruta.dot";
+        String imageFilePAth = "ruta.png";
+        generateSubRoute(graphFilePath2, imageFilePAth);
+    }//GEN-LAST:event_calcularViajeActionPerformed
+
+    private void filterComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterComboBoxActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_filterComboBoxActionPerformed
 
     private void generateGraphImage(String graphFilePath, String imageFilePath) {
         try {
@@ -452,6 +482,33 @@ public class PrincipalForm extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
+    
+    private void generateSubRoute(String graphFilePath, String imageFilePath) {
+        try {
+            Process process = Runtime.getRuntime().exec("dot -Tpng " + graphFilePath + " -o " + imageFilePath);
+            process.waitFor();
+
+            File imageFile = new File(imageFilePath);
+
+            if (imageFile.exists()) {
+            ImageIcon imageIcon = new ImageIcon(imageFilePath);
+            
+            int containerWidth = panelGraph.getWidth();
+            int containerHeight = panelGraph.getHeight();
+            
+            Image scaledImage = imageIcon.getImage().getScaledInstance(containerWidth, containerHeight, Image.SCALE_SMOOTH);
+            ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+            
+            labelSubRoute.setIcon(scaledImageIcon);
+            jPanel3.setSize(containerWidth, containerHeight);
+        } else {
+            System.out.println("Error: No se pudo generar la imagen del gráfico.");
+        }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
 
     /**
      * @param args the command line arguments
@@ -497,15 +554,15 @@ public class PrincipalForm extends javax.swing.JFrame {
     private javax.swing.JLabel clockTitle;
     private javax.swing.JComboBox<String> comboBoxInicio;
     private javax.swing.JComboBox<String> comoBoxDestino;
+    private javax.swing.JComboBox<String> filterComboBox;
     private javax.swing.JLabel imageLabel;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -513,9 +570,10 @@ public class PrincipalForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel labelSubRoute;
     private javax.swing.JPanel panelGraph;
+    private javax.swing.JLabel resultado;
     private javax.swing.JComboBox<String> routesComboBox;
-    private javax.swing.JTextField textInfo;
     private javax.swing.JTextField textTimer;
     private javax.swing.JComboBox<String> transportType;
     // End of variables declaration//GEN-END:variables

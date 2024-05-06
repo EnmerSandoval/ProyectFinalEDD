@@ -21,9 +21,6 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Traffic File"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem2ActionPerformed"/>
-              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>
@@ -60,19 +57,20 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="routesComboBox" min="-2" pref="634" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="routesComboBox" min="-2" pref="634" max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="panelGraph" max="32767" attributes="0"/>
+                          <Component id="jPanel3" max="32767" attributes="0"/>
+                      </Group>
                   </Group>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="panelGraph" max="32767" attributes="0"/>
-                      <Component id="jPanel3" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="jButton1" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="textInfo" min="-2" pref="182" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="194" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -84,13 +82,7 @@
               <Component id="jPanel1" max="32767" attributes="0"/>
           </Group>
           <Group type="102" attributes="0">
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="textInfo" min="-2" pref="233" max="-2" attributes="0"/>
-                  </Group>
-                  <Component id="panelGraph" alignment="0" min="-2" max="-2" attributes="0"/>
-              </Group>
+              <Component id="panelGraph" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="jPanel3" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -98,7 +90,9 @@
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   <Component id="routesComboBox" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="0" pref="34" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="4" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -213,9 +207,10 @@
                       <Component id="comboBoxInicio" pref="265" max="32767" attributes="0"/>
                       <Component id="comoBoxDestino" max="32767" attributes="0"/>
                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="jComboBox1" alignment="0" max="32767" attributes="0"/>
+                      <Component id="filterComboBox" alignment="0" max="32767" attributes="0"/>
                       <Component id="jLabel5" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Component id="transportType" alignment="0" max="32767" attributes="0"/>
+                      <Component id="resultado" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="jPanel2" max="32767" attributes="0"/>
@@ -237,7 +232,7 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jComboBox1" min="-2" max="-2" attributes="0"/>
+                  <Component id="filterComboBox" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -245,7 +240,13 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="calcularViaje" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
-                  <Component id="jPanel2" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jPanel2" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="resultado" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
           </Group>
         </DimensionLayout>
@@ -290,17 +291,20 @@
             <Property name="text" type="java.lang.String" value="Filtro"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JComboBox" name="jComboBox1">
+        <Component class="javax.swing.JComboBox" name="filterComboBox">
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="4">
-                <StringItem index="0" value="DISTANCIA"/>
-                <StringItem index="1" value="DESGASTE"/>
-                <StringItem index="2" value="CONSUMO"/>
-                <StringItem index="3" value="TIEMPO"/>
+                <StringItem index="0" value="distancia"/>
+                <StringItem index="1" value="desgaste"/>
+                <StringItem index="2" value="consumo"/>
+                <StringItem index="3" value="tiempo"/>
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="filterComboBoxActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
@@ -342,6 +346,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Calcular Viaje"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="calcularViajeActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="resultado">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Resultado:"/>
+          </Properties>
         </Component>
       </SubComponents>
     </Container>
@@ -367,11 +379,6 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JTextField" name="textInfo">
-      <Properties>
-        <Property name="horizontalAlignment" type="int" value="0"/>
-      </Properties>
-    </Component>
     <Container class="javax.swing.JPanel" name="jPanel3">
 
       <Layout>
@@ -379,12 +386,16 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
-              </Group>
-              <Group type="102" alignment="0" attributes="0">
-                  <Component id="jLabel7" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Component id="labelSubRoute" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
           </Group>
         </DimensionLayout>
@@ -394,7 +405,7 @@
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jLabel7" pref="130" max="32767" attributes="0"/>
+                  <Component id="labelSubRoute" pref="130" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -402,7 +413,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="jLabel6">
         </Component>
-        <Component class="javax.swing.JLabel" name="jLabel7">
+        <Component class="javax.swing.JLabel" name="labelSubRoute">
         </Component>
       </SubComponents>
     </Container>
@@ -422,6 +433,11 @@
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="jButton1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Por Ruta"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

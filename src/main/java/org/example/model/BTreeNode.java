@@ -1,7 +1,12 @@
 package org.example.model;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class BTreeNode {
 
@@ -96,4 +101,60 @@ public class BTreeNode {
         }
         return null;
     }
+
+    public int obtenerMetricaDeRuta(String origen, String destino, String tipoMetrica, String type) {
+        Set<String> visitados = new HashSet<>();
+        List<String> ruta = new ArrayList<>();
+        int metrica = obtenerMetricaDFS(origen, destino, visitados, tipoMetrica, type, ruta);
+        generarArchivoDOT(ruta);
+        return metrica;
+    }
+
+    private int obtenerMetricaDFS(String actual, String destino, Set<String> visitados, String tipoMetrica, String type, List<String> ruta) {
+        visitados.add(actual);
+        ruta.add(actual);
+
+        if (actual.equals(destino)) {
+            return 0;
+        }
+
+        for (int i = 0; i < n; i++) {
+            String nodoAdyacente = routes.get(i).getDestination().getName();
+            if (!visitados.contains(nodoAdyacente)) {
+                int metricaRuta = obtenerMetricaDFS(nodoAdyacente, destino, visitados, tipoMetrica, type, ruta);
+                if (metricaRuta != -1) {
+                    ruta.add(nodoAdyacente);
+                    if (tipoMetrica.equals("distancia")) {
+                        return metricaRuta + routes.get(i).getDistance();
+                    } else if (tipoMetrica.equals("consumo")) {
+                        return metricaRuta + routes.get(i).getGasolineExpensive();
+                    } else if (tipoMetrica.equals("tiempo") && type.equals("CAMINANDO")) {
+                        return metricaRuta + routes.get(i).getGasolineExpensive();
+                    } else if (tipoMetrica.equals("tiempo") && type.equals("VEHICULO")) {
+                        return metricaRuta + routes.get(i).getTimeCar();
+                    } else if (tipoMetrica.equals("desgaste")) {
+                        return metricaRuta + routes.get(i).getPersonalAttrition();
+                    }
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private void generarArchivoDOT(List<String> ruta) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter("ruta.dot"))) {
+            writer.println("digraph G {resolution = 60;");
+            writer.println("    rankdir=LR;");
+
+            for (int i = 0; i < ruta.size() - 1; i++) {
+                writer.println("    " + ruta.get(i) + " -> " + ruta.get(i + 1));
+            }
+
+            writer.println("}");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
