@@ -1,0 +1,38 @@
+digraph Grafo {resolution = 110; 
+
+randkir=LR;
+
+  "Solla";
+  "CiuVi";
+  "Rtleu";
+  "SnLcS";
+  "Quich";
+  "Huehu";
+  "Suchi";
+  "Qtzgo";
+  "SnMrs";
+  "SBaMA";
+  "StLMA";
+  "Guate";
+  "SnMdJ";
+  "AlVer";
+  "Peten";
+  "CiuVi" -> "SnMrs" ;
+  "CiuVi" -> "Peten" ;
+  "Rtleu" -> "Qtzgo" ;
+  "SnLcS" -> "Quich" ;
+  "Quich" -> "StLMA" ;
+  "Huehu" -> "SnLcS" ;
+  "Suchi" -> "Guate" ;
+  "Suchi" -> "SnLcS" ;
+  "Qtzgo" -> "Rtleu" ;
+  "Qtzgo" -> "SnMrs" ;
+  "Qtzgo" -> "Solla" ;
+  "SnMrs" -> "Qtzgo" ;
+  "SnMrs" -> "SBaMA" ;
+  "SBaMA" -> "Suchi" ;
+  "AlVer" -> "SnMdJ" ;
+  "AlVer" -> "CiuVi" ;
+  "Peten" -> "CiuVi" ;
+  "Peten" -> "Huehu" ;
+}
